@@ -29,11 +29,11 @@ class Job(DocType):
     title = Text(analyzer = lowerCase_analyzer)
     company = Text(analyzer = lowerCase_analyzer)
     summary = Text(analyzer = summary_analyzer)
-    type = Text()
+    jobtype = Text()
     location = Text()
     state = Text()
     city = Text()
-    zip = Text()
+    zipcode = Text()
     salary = Float()
     date = Date()
     
@@ -62,9 +62,9 @@ def cityOf(location):
 def zipOf(location):
     if "," in location:
         state_location = location.split(",")[1]
-        zip = re.findall(r"(\d+)", state_location)
-        if zip:
-            return zip[0]
+        zipcode = re.findall(r"(\d+)", state_location)
+        if zipcode:
+            return zipcode[0]
     return ""
     
 # store movie data into elastic search structure
@@ -93,11 +93,11 @@ def prepareIndex():
             "title":jobs[jid]['title'],
             "company":jobs[jid]['company'],
             "summary":jobs[jid]['summary'],
-            "type":jobs[jid]['type'].lstrip(), # remove the beginning spaces in job type
+            "jobtype":jobs[jid]['type'].lstrip(), # remove the beginning spaces in job type
             "location":jobs[jid]['location'],
             "state":stateOf(jobs[jid]['location']),
             "city":cityOf(jobs[jid]['location']),
-            "zip":zipOf(jobs[jid]['location']),
+            "zipcode":zipOf(jobs[jid]['location']),
             "salary":float(jobs[jid]['salary']),
             "date":parser.parse(jobs[jid]['date'])
         }
