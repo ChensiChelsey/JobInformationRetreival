@@ -2,14 +2,16 @@ from index import Job
 from elasticsearch_dsl import Search, Q
 import re
 import datetime
+import pprint
 
 # input: jobtitle, description, state, city, jobtype, salary, date
 # index:
 def search(jobtitle, description, state, city, jobtype, salary, date):
     search = Job.search()
     s = search.query(Q('match_all'))
-    if len(jobtitle) != 0 and len(description) != 0:
-        s = search.query('multi_match', query = jobtitle + " " + description, type = 'cross_fields', fields=['title', 'summary'], operator = 'and')
+    if len(jobtitle) != 0 or len(description) != 0:
+        whole_query = jobtitle + " " + description
+        # s = search.query('multi_match', query = jobtitle + " " + description, type = 'cross_fields', fields=['title', 'summary'])
 
     # location
     if len(state) > 0:
@@ -32,7 +34,8 @@ def search(jobtitle, description, state, city, jobtype, salary, date):
         today = datetime.datetime.now().toordinal()
         s = s.query('range', date = {'gte': today - days})
 
-    print s.to_dict()
+    pp = pprint.PrettyPrinter(depth = 6)
+    pp.pprint(s.to_dict())
     response = s.execute()
 
     resultlist = []
