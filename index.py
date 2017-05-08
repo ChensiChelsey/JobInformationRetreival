@@ -17,7 +17,7 @@ connections.create_connection(hosts=['127.0.0.1'])
 es = Elasticsearch()
 
 # define analyzers
-name_synonym = token_filter('state_synonym',
+state_synonym = token_filter('state_synonym',
                             type='synonym',
                             synonyms_path="state_syn.txt")
 summary_analyzer = analyzer('custom',
@@ -26,6 +26,8 @@ summary_analyzer = analyzer('custom',
 lowerCase_analyzer = analyzer('custom',
                               tokenizer='standard',
                               filter=['lowercase'])
+state_analyzer = analyzer('custom',
+                          filter=['lowercase', state_synonym])
 
 # define Movie class mapping
 class Job(DocType):
@@ -33,8 +35,7 @@ class Job(DocType):
     company = Text(analyzer = lowerCase_analyzer)
     summary = Text(analyzer = summary_analyzer)
     jobtype = Text()
-    location = Text()
-    state = Text()
+    state = Text(analyzer = state_analyzer)
     city = Text()
     zipcode = Text()
     salary = Float()
@@ -97,7 +98,6 @@ def prepareIndex():
             "company":jobs[jid]['company'],
             "summary":jobs[jid]['summary'],
             "jobtype":jobs[jid]['type'].lstrip(), # remove the beginning spaces in job type
-            "location":jobs[jid]['location'],
             "state":stateOf(jobs[jid]['location']),
             "city":cityOf(jobs[jid]['location']),
             "zipcode":zipOf(jobs[jid]['location']),
