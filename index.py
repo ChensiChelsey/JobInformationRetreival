@@ -4,7 +4,7 @@ import time
 
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
-from elasticsearch_dsl import DocType, Text, Float, Date, Integer
+from elasticsearch_dsl import DocType, Text, Float, Date, Integer, Keyword
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl.analysis import tokenizer, analyzer, token_filter
 from dateutil import parser
@@ -19,7 +19,7 @@ es = Elasticsearch()
 # define analyzers
 state_synonym = token_filter('state_synonym',
                             type='synonym',
-                            synonyms_path="state_syn.txt")
+                            synonyms_path='state_syn.txt')
 summary_analyzer = analyzer('custom',
                             tokenizer='standard',
                             filter=['lowercase', 'stop', 'snowball'])
@@ -27,7 +27,8 @@ lowerCase_analyzer = analyzer('custom',
                               tokenizer='standard',
                               filter=['lowercase'])
 state_analyzer = analyzer('custom',
-                          filter=['lowercase', state_synonym])
+                          tokenizer = 'keyword',
+                          filter= [state_synonym, 'lowercase'])
 
 # define Movie class mapping
 class Job(DocType):
@@ -38,7 +39,7 @@ class Job(DocType):
     state = Text(analyzer = state_analyzer)
     city = Text()
     salary = Float()
-    date = Date()
+    date = Integer()
     
     class Meta:
         index = 'job_index'
@@ -102,7 +103,7 @@ def prepareIndex():
             "city":cityOf(jobs[jid]['location']),
             "location":jobs[jid]['location'],
             "salary":float(jobs[jid]['salary']),
-            "date":parser.parse(jobs[jid]['date'])
+            "date":parser.parse(jobs[jid]['date']).toordinal()
         }
         for jid in jobs
     ]
