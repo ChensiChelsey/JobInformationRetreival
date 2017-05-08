@@ -20,23 +20,29 @@ es = Elasticsearch()
 state_synonym = token_filter('state_synonym',
                             type='synonym',
                             synonyms_path='state_syn.txt')
-summary_analyzer = analyzer('custom',
+
+summary_analyzer = analyzer('summary_analyzer',
+                            type = 'custom',
                             tokenizer='standard',
                             filter=['lowercase', 'stop', 'snowball'])
-lowerCase_analyzer = analyzer('custom',
+
+lowerCase_analyzer = analyzer('lowerCase_analyzer',
                               tokenizer='standard',
+                              type='custom',
                               filter=['lowercase'])
-state_analyzer = analyzer('custom',
-                          tokenizer = 'keyword',
+
+state_analyzer = analyzer('state_analyzer',
+                          type = 'custom',
+                          tokenizer = 'standard',
                           filter= [state_synonym, 'lowercase'])
 
 # define Movie class mapping
 class Job(DocType):
-    title = Text(analyzer = lowerCase_analyzer)
-    company = Text(analyzer = lowerCase_analyzer)
+    title = Text(analyzer = lowerCase_analyzer, fielddata = True)
+    company = Text(analyzer = lowerCase_analyzer, fielddata = True)
     summary = Text(analyzer = summary_analyzer)
     jobtype = Text()
-    state = Text(analyzer = state_analyzer)
+    state = Text(analyzer = state_analyzer, fields={'raw':{'type': 'keyword'}})
     city = Text()
     salary = Float()
     date = Integer()

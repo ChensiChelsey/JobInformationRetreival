@@ -1,5 +1,9 @@
-from queryBuilder import search
+from queryBuilder import generalSearch, companySearch, companyStatic
 
-resultlist = search('Software', '', '', '', '', 0, '100')
-print resultlist
-print len(resultlist)
+#resultlist = generalSearch('Software Developer Seattle', '', 'NC', 'Raleigh-Durham', 'Amazon', 'full-time', 0, '100')
+#resultlist = companySearch('Amazon')
+
+companyStatic()
+
+# print resultlist
+# print len(resultlist)
