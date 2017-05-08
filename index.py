@@ -17,6 +17,9 @@ connections.create_connection(hosts=['127.0.0.1'])
 es = Elasticsearch()
 
 # define analyzers
+name_synonym = token_filter('state_synonym',
+                            type='synonym',
+                            synonyms_path="state_syn.txt")
 summary_analyzer = analyzer('custom',
                             tokenizer='standard',
                             filter=['lowercase', 'stop', 'snowball'])
@@ -42,7 +45,7 @@ class Job(DocType):
         doc_type = 'job'
 
     def save(self, *args, **kwargs):
-        return super(Movie, self).save(*args, **kwargs)
+        return super(Job, self).save(*args, **kwargs)
 
 # Extract state info from location
 def stateOf(location):
