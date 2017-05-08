@@ -104,13 +104,9 @@ def recommendationSearch(state, city, proBG, eduBG_degree, eduBG_major, salary, 
     if len(city) > 0:
         s = s.query('match', city=city)
 
-    #professional background
+    # professional & education background
     if len(proBG) > 0:
-        s = s.query('multi_match', query=proBG, type='cross_fields', fields=['title', 'summary'], operator='and')
-
-    #education background
-    if len(eduBG_degree) > 0 or len(eduBG_major):
-        s = s.query('match', summary=eduBG_degree + " " + eduBG_major)
+        s = s.query('multi_match', query=proBG + ' ' + eduBG_degree + " " + eduBG_major, type='cross_fields', fields=['title', 'summary'])
 
     # jobtype
     if len(jobtype) > 0:
