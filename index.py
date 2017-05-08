@@ -4,7 +4,7 @@ import time
 
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
-from elasticsearch_dsl import DocType, Text, Float, Date
+from elasticsearch_dsl import DocType, Text, Float, Date, Integer
 from elasticsearch_dsl.connections import connections
 from elasticsearch_dsl.analysis import tokenizer, analyzer, token_filter
 from dateutil import parser
@@ -37,7 +37,6 @@ class Job(DocType):
     jobtype = Text()
     state = Text(analyzer = state_analyzer)
     city = Text()
-    zipcode = Text()
     salary = Float()
     date = Date()
     
@@ -99,8 +98,9 @@ def prepareIndex():
             "summary":jobs[jid]['summary'],
             "jobtype":jobs[jid]['type'].lstrip(), # remove the beginning spaces in job type
             "state":stateOf(jobs[jid]['location']),
+            "url": jobs[jid]['url'],
             "city":cityOf(jobs[jid]['location']),
-            "zipcode":zipOf(jobs[jid]['location']),
+            "location":jobs[jid]['location'],
             "salary":float(jobs[jid]['salary']),
             "date":parser.parse(jobs[jid]['date'])
         }

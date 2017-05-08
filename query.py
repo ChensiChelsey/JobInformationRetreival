@@ -2,6 +2,7 @@ from flask import *
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, Q
 import collections
+import os
 
 
 es = Elasticsearch(['localhost'], http_auth=('elastic', 'changeme'), port=9200)
@@ -25,7 +26,6 @@ def results():
         Type = request.form['Job Type']
         State = request.form['State']
         City = request.form['City']
-        ZipCode = request.form['ZipCode']
         Salary = request.form['Salary']
         Date = request.form['Date']
 
@@ -177,7 +177,39 @@ def getpage(id):
     except KeyError:
         return "Problem"
 
+@app.route('/resume')
+def check_resume():
+    filename = r'resume.json'
+    if os.path.exists(filename):
+        with open(filename, 'r') as f:
+            data = json.load(f)
+        return render_template('resume_result.html', data)
+    else:
+        return render_template('update_resume.html')
 
+
+@app.route('/upload_resume')
+# save the user's resume into a json-file
+def save_resume():
+    try:
+        # get the query from user
+        resume = {}
+        resume['FirstName'] = request.form['First name']
+        resume['LastName'] = request.form['First name']
+        resume['Address']['State'] = request.form['State']
+        resume['Address']['City'] = request.form['City']
+        resume['Address']['ZipCode'] = request.form['ZipCode']
+        resume['ProfessionalBackground'] = request.form['Professional Background']
+        resume['EducationBackground']['Degree'] = request.form['Degree']
+        resume['EducationBackground']['Major'] = request.form['Major']
+        resume['JobType'] = request.form['JobType']
+        resume['ExpectedSalary'] = request.form['Expected Salary']
+        f = open("resume.json", "w+")
+        jsontext = json.dumps(resume, ensure_ascii=False, indent=4)
+        f.write(jsontext)
+        return render_template('resume_result.html', resume)
+    except:
+        print "Problem"
 
 @app.route('/detail/<string:id>')
 # show the detailed information of a doc, inclues the title, id, infobox and text
@@ -185,56 +217,30 @@ def page_detail(id):
     try:
         # search the document based on its metaid
         s = Search(using=es)
-        s = s.index('imdb')
+        s = s.index('job_index')
         s = s.filter('term', _id=id)
         ret = s.execute()
-        movie=get_movie_detail(ret.hits[0].to_dict(),id)
+        job=get_job_detail(ret.hits[0].to_dict(),id)
 
-        return render_template('detail.html',title = movie['title'], infobox = movie['infobox'], text = movie['text'], id = movie['id'])
+        return render_template('detail.html', job)
     except KeyError:
         return "Problem"
 
 # This function is used to get the detailed information of the movie in a dictionary
-def get_movie_detail(hit, id):
+def get_job_detail(hit, id):
     print 'detail'
-    # movie = {}
-    # movie['title'] = hit['title']
-    # movie['text'] = result.get_highlighttext(id)
-    # if movie['text'] == "":
-    #     movie['text'] = hit['text']
-    # movie['id'] = hit['id']
-    # movie['infobox'] = {}
-    #
-    # # for some of the data fields are a list of terms, so make them to a string
-    # if type(hit['language']) == list:
-    #     movie['infobox']['language'] = ', '.join(hit['language'])
-    # else:
-    #     movie['infobox']['language'] = hit['language']
-    # if type(hit['country']) == list:
-    #     movie['infobox']['country'] = ', '.join(hit['country'])
-    # else:
-    #     movie['infobox']['country'] = hit['country']
-    # if type(hit['director']) == list:
-    #     movie['infobox']['director'] = ', '.join(hit['director'])
-    # else:
-    #     movie['infobox']['director'] = hit['director']
-    # if type(hit['location']) == list:
-    #     movie['infobox']['location'] = ', '.join(hit['location'])
-    # else:
-    #     movie['infobox']['location'] = hit['location']
-    # if type(hit['starring']) == list:
-    #     casts = ', '.join(hit['starring'])
-    # else:
-    #     casts = hit['starring']
-    #
-    # # highlight the query terms in starring
-    # for cast in result.get_starringlist():
-    #     casts = casts.replace(cast, "<mark>" + cast + "</mark>")
-    # movie['infobox']['starring'] = casts
-    # if type(hit['categories']) == list:
-    #     movie['infobox']['categories'] = ', '.join(hit['categories'])
-    # movie['infobox']['runtime'] = hit['runtime']
-    # return movie
+    job = {}
+    job['title'] = hit['title']
+    job['summary'] = hit['summary']
+    job['url'] = 'www.indeed.com' + hit['url']
+    job['company'] = hit['company']
+    job['location'] = hit['location']
+    if hit['salary'] == '':
+        job['salary'] = 'Unknown'
+    else:
+        job['salary'] = hit['salary']
+    job['jobtype'] = hit['jobtype']
+    return job
 
 
 if __name__ == "__main__":
