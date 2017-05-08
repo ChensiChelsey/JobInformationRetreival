@@ -188,7 +188,7 @@ def check_resume():
         return render_template('update_resume.html')
 
 
-@app.route('/upload_resume')
+@app.route('/save_resume')
 # save the user's resume into a json-file
 def save_resume():
     try:
