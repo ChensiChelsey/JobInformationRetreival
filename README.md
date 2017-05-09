@@ -5,5 +5,5 @@ Retrieve job information cross website and generate to ender user to search by d
 * full-time
 * internship
 * part-time
-* contrast
+* contract
 * temporary
