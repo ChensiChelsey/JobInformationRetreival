@@ -8,12 +8,12 @@ body {
   background-attachment: fixed;
   background-repeat: no-repeat;
   background-size: 100% 100%;
+  position: relative;
+  height: auto;
+  min-height: 100%;
 }
-
-
-
-.main-content {
-  padding-bottom: 50px;
+.container-fluid {
+  padding-bottom: 120px;
 }
 
 /*highlight*/
@@ -41,12 +41,11 @@ em {
 }
 
 footer{
-    /*position:fixed;*/
-    height:50px;
-    bottom:0px;
     left:0px;
     right:0px;
-    margin-bottom:0px;
+    position: absolute;
+    bottom: 0;
+    height: 60px;
 }
 
 .center-button {
