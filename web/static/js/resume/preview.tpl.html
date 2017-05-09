@@ -7,7 +7,7 @@
       <p class="w3-text-white"><%=resume.state%></p>
       <p class="w3-text-white"><%=resume.city%></p>
       <p class = "w3-text-grey">PROFESSIONAL BACKGROUND</p>
-      <p class = "w3-text-white"><%=resume.pbg%></p>
+      <p class = "w3-text-white"><%=resume.pbg.split("\n").join("<br/>").split(" ").join("&nbsp;")%></p>
       <p class = "w3-text-grey">EDUCATION BACKGROUND</p>
       <p class="w3-text-white"><%=resume.major%></p>
       <p class="w3-text-white"><%=resume.degree%></p>

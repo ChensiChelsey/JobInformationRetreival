@@ -45,7 +45,7 @@ define(["Backbone", "TEXT!resume/resume.tpl.html", "TEXT!resume/update.tpl.html"
         major: this.$("#major").val(),
         degree: this.$("#degree").val(),
         jobtype: this.$("#jobtype").val(),
-        salary: this.$("#salary").val()
+        salary: parseFloat(this.$("#salary").val())
       }
     },
 

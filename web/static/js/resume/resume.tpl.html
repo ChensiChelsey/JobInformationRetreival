@@ -9,11 +9,11 @@
         <span class="w3-tag w3-wide">Management</span>
       </h5>
 
-      <button type="button" class="btn btn-default form-control" id="update_resume">
+      <button type="button" class="btn btn-default form-control option-btn" id="update_resume">
         <%= Resume.hasResume() ? "Update" : "Create" %> 
       </button>
       <% if (Resume.hasResume()) {%>
-        <button type="button" class="btn btn-default form-control" id="preview_resume"> 
+        <button type="button" class="btn btn-default form-control option-btn" id="preview_resume"> 
           Preview
         </button>
       <% } %>

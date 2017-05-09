@@ -1,11 +1,21 @@
 import json
 from flask import *
-# import collections
-# import os
+import queryBuilder
 
 
 app = Flask(__name__)
 job_fields = ["job_title", "description", "company", "type", "state", "city", "salary", "date"]
+resume_fields = ["city", "state", "jobtype", "major", "pbg", "degree", "salary"]
+mock_job_list = [{
+    "score": 1.0,
+    "title": "title 1",
+    "summary": "job summary",
+    "url": "url",
+    "company": "indeed",
+    "location": "Waltham",
+    "postingdate": "2017-3-2"
+}] * 10
+
 
 @app.route("/")
 @app.route("/home")
@@ -30,16 +40,26 @@ def job_page():
 
 
 @app.route("/search")
-def search():
+def general_search():
     params = {}
     for field in job_fields:
         if field in request.form:
             params[field] = request.form[field]
-    job_list = search_jobs_by_params(params, mock=True)
+    job_list = general_search_ela(params)
     return json.dumps(job_list)
 
 
-def search_jobs_by_params(params, mock=False):
+@app.route("/recommend")
+def recommend_Search():
+    params = {}
+    for field in resume_fields:
+        if field in request.form:
+            params[field] = request.form[field]
+    job_list = recommend_search_ela(params)
+    return json.dumps(job_list)
+
+
+def general_search_ela(params, mock=False):
     if mock:
         return [{
             "score": 1.0,
@@ -50,6 +70,25 @@ def search_jobs_by_params(params, mock=False):
             "location": "Waltham",
             "postingdate": "2017-3-2"
         }] * 10
+    else:
+        job_list = queryBuilder.generalSearch(params)
+        return job_list
+
+
+def recommend_search_ela(params, modk=False):
+    if mock:
+        return [{
+            "score": 1.0,
+            "title": "title 1",
+            "summary": "job summary",
+            "url": "url",
+            "company": "indeed",
+            "location": "Waltham",
+            "postingdate": "2017-3-2"
+        }] * 10
+    else:
+        job_list = queryBuilder.recommendationSearch(params)
+        return job_list
 
 
 if __name__ == "__main__":

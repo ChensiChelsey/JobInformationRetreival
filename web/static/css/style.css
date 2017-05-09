@@ -20,11 +20,15 @@ body {
 
 .c-sidebar {
   position: fixed;
-  height: 200px;
+  height: auto;
 }
 
 .main-content {
   padding-top: 80px;
+}
+
+.option-btn {
+  margin-bottom: 10px;
 }
 
 /*highlight*/

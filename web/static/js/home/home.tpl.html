@@ -10,7 +10,21 @@
         <span class="w3-tag w3-wide">Resume</span>
       </h5>
       <% if (Resume.hasResume()) {%>
-        <%= Resume.getBriefHTML() %>
+        <% resume = Resume.getData() %>
+        <ol>
+          <% if (resume.fn != "") {%>
+            <li><p class="w3-text-white"><b>First Name:</b> <%=resume.fn%></p></li>
+          <% } %>
+          <% if (resume.ln != "") {%>
+            <li><p class="w3-text-white"><b>Last Name:</b> <%=resume.ln%></p></li>
+          <% } %>
+          <% if (resume.major != "") {%>
+            <li><p class="w3-text-white"><b>Major:</b> <%=resume.major%></p></li>
+          <% } %>
+          <% if (resume.degree != "") {%>
+            <li><p class="w3-text-white"><b>Degree:</b> <%=resume.degree%></p></li>
+          <% } %>
+        </ol>
       <% } %>
       <button type="button" class="btn btn-default form-control" id="manage_resume"> 
         Manage Resume
