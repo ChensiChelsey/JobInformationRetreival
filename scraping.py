@@ -2,6 +2,11 @@
 import json
 import sys
 
+
+'''
+this file is used to build the initial json corpus
+'''
+
 # Search settings
 KEYWORD_FILTER = ['IT', 'Software', 'engineer', 'developer', 'scientist', 'computer', 'researcher','technician', 'data', 'specialist', 'designer']
 LOCATION_FILTER = ""
