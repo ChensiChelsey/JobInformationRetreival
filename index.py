@@ -21,10 +21,15 @@ state_synonym = token_filter('state_synonym',
                             type='synonym',
                             synonyms_path='state_syn.txt')
 
+summary_synonym = token_filter('summary_synonym',
+                             type='synonym',
+                             synonyms_path='new_syn.txt')
+
+
 summary_analyzer = analyzer('summary_analyzer',
                             type = 'custom',
                             tokenizer='standard',
-                            filter=['lowercase', 'stop', 'snowball'])
+                            filter=['lowercase', 'stop', 'snowball', summary_synonym])
 
 lowerCase_analyzer = analyzer('lowerCase_analyzer',
                               tokenizer='standard',
@@ -38,8 +43,8 @@ state_analyzer = analyzer('state_analyzer',
 
 # define Movie class mapping
 class Job(DocType):
-    title = Text(analyzer = lowerCase_analyzer, fielddata = True)
-    company = Text(analyzer = lowerCase_analyzer, fielddata = True)
+    title = Text(analyzer = lowerCase_analyzer)
+    company = Text(analyzer = lowerCase_analyzer)
     summary = Text(analyzer = summary_analyzer)
     jobtype = Text()
     state = Text(analyzer = state_analyzer, fields={'raw':{'type': 'keyword'}})
@@ -78,28 +83,19 @@ def zipOf(location):
     return ""
     
 # store movie data into elastic search structure
-def prepareIndex():
-    # If outdate version index exists delete the old one and create new
-    if es.indices.exists(index='job_index'):
-        es.indices.delete(index='job_index')   
-    es.indices.create(index = 'job_index')
+def prepareIndex(jobs):
+
         
     # initialize mapping
     es.indices.close(index='job_index') # For enable analyzer modify close index firstly
     Job.init()
     es.indices.open(index='job_index')
-    
-    # open json file and store data into elastic search
-    filename = raw_input("Please input corpus' name(without extension name): ")
-    with open(filename + '.json') as data_file:
-        jobs = json.load(data_file)
         
     # Bulk Load
     actions = [
         {
             "_index": "job_index",
             "_type": "job",
-            "_id": jid,
             "title":jobs[jid]['title'],
             "company":jobs[jid]['company'],
             "summary":jobs[jid]['summary'],
@@ -116,8 +112,19 @@ def prepareIndex():
     helpers.bulk(es, actions) 
     
 def main():
+    # open json file and store data into elastic search
+    filename = raw_input("Please input corpus' name(without extension name): ")
+    with open(filename + '.json') as data_file:
+        jobs = json.load(data_file)
     start_time = time.time()
-    prepareIndex()
+
+    # If outdate version index exists delete the old one and create new
+    if es.indices.exists(index='job_index'):
+        es.indices.delete(index='job_index')
+    es.indices.create(index='job_index')
+
+
+    prepareIndex(jobs)
     print("--- ElasticSearch Prepared. Running time is %s seconds ---" % (time.time() - start_time))
         
 if __name__ == '__main__':

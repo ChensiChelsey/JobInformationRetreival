@@ -4,7 +4,7 @@ from lxml import html
 import re
 import unirest
 import string
-
+from dateutil import parser
 
 base_url = "http://www.indeed.com"
 
@@ -22,13 +22,13 @@ def build_search_url(keywords, location):
 def build_detail(job_url):
     summary = ""
     try:
-        request = requests.get(base_url + job_url)
+        request = requests.get(base_url + job_url, timeout = 10)
         url = str(request.url)
         if url.find("www.indeed.com") > 0:
             tree = html.fromstring(request.text)
             node = tree.xpath('.//span[contains(@class,"summary")]//text()')
             summary = '\n'.join(node)
-            print summary
+            #print summary
     except Exception,e:
         print Exception,":",e
     return summary
@@ -63,47 +63,89 @@ def parse_date(job_date):
     job_date_obj = datetime.datetime.today() - datetime.timedelta(days=days, hours=hours)
     return job_date_obj
 
+
+
+def parse_job_summary(summary, detail):
+    lines = summary.split("\n")
+    detail['type'] = ''
+    detail['salary'] = 0
+    for line in lines:
+        if line.find('Job Type') >= 0:
+            try:
+                detail['type'] = line.split(":")[1]
+            except Exception, e:
+                print Exception, ":", e
+        if line.find('Salary') >= 0:
+            try:
+                text = line.split(":")[1]
+                text = re.sub("[\!\/_,$%^*(+\"\'\[\]]+", "", text)
+                number = []
+                splited = text.split(" ")
+                for word in splited:
+                    try:
+                        number.append(string.atof(word))
+                    except Exception, e:
+                        continue
+                if len(number) == 1:
+                    salary = number[0]
+                else:
+                    salary = (number[0] + number[1])/2
+                if text.find('year') > 0:
+                    detail['salary'] = salary
+                else:
+                    if text.find('day') > 0:
+                        detail['salary'] = salary * 250
+                    else:
+                        if text.find('hour') > 0:
+                            detail['salary'] = salary * 8 * 250
+            except Exception, e:
+                print Exception, ":", e
+    return detail
+
 def parse_job(job):
-    #print job.xpath('.//span//text()')
-    job_title = parse_xpath(job.xpath('.//h2[contains(@class,"jobtitle")]/a/@title'))
-    job_url = parse_xpath(job.xpath('.//h2[contains(@class,"jobtitle")]/a/@href'))
-    job_date = parse_date(parse_xpath(job.xpath('.//span[contains(@class,"date")]/text()')))
+    detail = {}
+    detail['title'] = parse_xpath(job.xpath('.//h2[contains(@class,"jobtitle")]/a/@title'))
+    detail['url'] = parse_xpath(job.xpath('.//h2[contains(@class,"jobtitle")]/a/@href'))
+    date = str(parse_date(parse_xpath(job.xpath('.//span[contains(@class,"date")]/text()'))))
+    detail['date'] = parser.parse(date)
     company = parse_xpath(job.xpath('.//span[contains(@class,"company")]//text()'))
     company = company.replace('\\n', '')
     company = re.sub("[\.\!\/_,$%^*(+\"\'\[\]]+", "", company)
-    company = company.strip(' ')
-    location = parse_xpath(job.xpath('.//span[contains(@class,"location")]//text()'))
-    job_summary = build_detail(job_url)
-
-    if(len(job_summary) < 10):
+    detail['company'] = company.strip(' ')
+    detail['location'] = parse_xpath(job.xpath('.//span[contains(@class,"location")]//text()'))
+    summary = build_detail(detail['url'])
+    if (len(summary) < 10):
         return {}
-    return {'job_url':job_url, 'job_title':job_title, 'company':company,
-            'location':location, 'job_date':str(job_date), 'job_summary': job_summary}
+    detail['summary'] = summary
+    detail = parse_job_summary(summary, detail)
+    return detail
 
-def get_jobs(keywords, location, max_pages=1):
+def get_jobs(keywords, location, max_pages=1, id = 0, jobs = {}, starttime = 0):
+    try:
+        tree = html.fromstring(requests.get(build_search_url(keywords, location), timeout=10).text)
+        diff = 0
+        for i in range(max_pages):
+            jobs_divs = tree.xpath('//div[contains(@class,"result") and contains(@class,"row")]')
+            for job in jobs_divs:
+                p_j = parse_job(job)
+                if p_j != {}:
+                    if starttime != 0 and starttime > p_j['date']:
+                        dif = starttime - p_j['date']
+                        print p_j['date']
+                        if dif.total_seconds() > 3600:
+                            diff = dif
+                            break
+                    p_j['date'] = str(p_j['date'])
+                    jobs[str(id)] = p_j
+                    id = id + 1
 
-    tree = html.fromstring(requests.get(build_search_url(keywords, location)).text)
+            if starttime != 0 and diff != 0:
+                break
+            next_url = build_search_url(keywords, str(i * 10 + 10))
+            next_page = next_url.replace("&l=", "&start=")
+            print next_page
+            tree = html.fromstring(requests.get(next_page, timeout=10).text)
+    except Exception, e:
+        print Exception, ":", e
 
-    jobs = {}
-    id = 1
-    for i in range(max_pages):
-        jobs_divs = tree.xpath('//div[contains(@itemtype,"JobPosting")]')
-        for job in jobs_divs:
-            p_j = parse_job(job)
-            if p_j != {}:
-                jobs[str(id)] = p_j
-                id = id + 1
-                if id > 100:
-                    break
-
-        if id > 100:
-            break
-        next_page = tree.xpath('//div[contains(@class,"pagination")]//span[contains(text(),"Next")]/../../@href')
-        if len(next_page) == 0:
-            print "Last page: ", i + 1
-            break
-        else: next_page = base_url + next_page[0]
-
-        tree = html.fromstring(requests.get(next_page).text)
-
-    return jobs
+    return id

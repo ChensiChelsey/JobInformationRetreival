@@ -96,27 +96,37 @@ def recommendationSearch(state, city, proBG, eduBG_degree, eduBG_major, salary, 
     search = Job.search()
     s = Search(using=es)
     s = s.index('job_index')
-    s = s.query(Q('match_all'))
 
+    condition = []
     #location
     if len(state) > 0:
-        s = s.query('match_phrase', state=state)
+        qState = Q('match_phrase', state=state)
+        condition.append(qState)
     if len(city) > 0:
-        s = s.query('match', city=city)
+        qCity = Q('match', city=city)
+        condition.append(qCity)
 
     # professional & education background
     if len(proBG) > 0:
-        s = s.query('multi_match', query=proBG + ' ' + eduBG_degree + " " + eduBG_major, type='cross_fields', fields=['title', 'summary'])
+        qBG = Q('multi_match', query=proBG + ' ' + eduBG_degree + " " + eduBG_major, type='cross_fields', fields=['title', 'summary'])
+        condition.append(qBG)
 
     # jobtype
     if len(jobtype) > 0:
-        s = s.query('match', jobtype=jobtype)
+        qType = Q('match', jobtype=jobtype)
+        condition.append(qType)
 
     # salary
     if salary > 0:
-        s = s.query('range', salary={'gte': salary})
+        qSalary = Q('range', salary={'gte': salary})
+        condition.append(qSalary)
+
+    q = Q('bool', should = condition, minimum_should_match = 1)
+    s = s.query(q)
 
     s = s[startpos * 10: (startpos + 1) * 10]
+    pp = pprint.PrettyPrinter(depth=6)
+    pp.pprint(s.to_dict())
     response = s.execute()
 
     resultlist = []
