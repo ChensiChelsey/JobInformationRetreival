@@ -18,7 +18,7 @@ sortedresult = []
 # do general search
 # input: jobtitle, description, state, city, jobtype, salary, date
 # output: list of results
-def generalSearch(jobtitle, description, state, city, company, jobtype, salary, date, startpos, latest):
+def generalSearch(search,  startpos, latest):
     global sortedresult
     if latest and startpos > 0 and len(sortedresult) > 0:
         return sortedresult[startpos: startpos + 10]
@@ -28,34 +28,34 @@ def generalSearch(jobtitle, description, state, city, company, jobtype, salary, 
     s = s.query(Q('match_all'))
 
     # title
-    if len(jobtitle) > 0:
-        s = s.query('multi_match', query = jobtitle, type = 'cross_fields', fields = ['title', 'summary'], operator = 'and')
+    if len(search['jobtitle']) > 0:
+        s = s.query('multi_match', query = search['jobtitle'], type = 'cross_fields', fields = ['title', 'summary'], operator = 'and')
 
     # job description
-    if len(description) > 0:
-        s = s.query('match', summary = jobtitle + " " + description)
+    if len(search['description']) > 0 or len(search['jobtitle']) > 0:
+        s = s.query('match', summary = search['jobtitle'] + " " + search['description'])
 
     # company
-    if len(company) > 0:
-        s = s.query('match', company=company)
+    if len(search['company']) > 0:
+        s = s.query('match', company=search['company'])
 
     # location
-    if len(state) > 0:
-        s = s.query('match_phrase', state = state)
-    if len(city) > 0:
-        s = s.query('match', city = city)
+    if len(search['state']) > 0:
+        s = s.query('match_phrase', state = search['state'])
+    if len(search['city']) > 0:
+        s = s.query('match', city = search['city'])
 
     # jobtype
-    if len(jobtype) > 0:
-        s = s.query('match', jobtype=jobtype)
+    if len(search['jobtype']) > 0:
+        s = s.query('match', jobtype=search['jobtype'])
 
     # salary
-    if salary > 0:
-        s = s.query('range', salary = {'gte': salary})
+    if search['salary'] > 0:
+        s = s.query('range', salary = {'gte': search['salary']})
 
     # date
-    if len(date) > 0:
-        days = re.findall(r"(\d+)", date)[0]
+    if len(search['date']) > 0:
+        days = re.findall(r"(\d+)", search['date'])[0]
         days = int(days)
         today = datetime.datetime.now().toordinal()
         s = s.query('range', date = {'gte': today - days})
@@ -102,7 +102,6 @@ def generalSearch(jobtitle, description, state, city, company, jobtype, salary, 
 
 # search for the jobs posted by the company
 def companySearch(company, startpos):
-    search = Job.search()
     s = Search(using=es)
     s = s.index('job_index')
     s = s.query('match', company=company)
@@ -125,33 +124,32 @@ def companySearch(company, startpos):
     return resultlist
 
 # recommend jobs based on user's resume
-def recommendationSearch(state, city, proBG, eduBG_degree, eduBG_major, salary, jobtype, startpos):
-    search = Job.search()
+def recommendationSearch(search, startpos):
     s = Search(using=es)
     s = s.index('job_index')
 
     condition = []
     #location
-    if len(state) > 0:
-        qState = Q('match_phrase', state=state)
+    if len(search['state']) > 0:
+        qState = Q('match_phrase', state=search['state'])
         condition.append(qState)
-    if len(city) > 0:
-        qCity = Q('match', city=city)
+    if len(search['city']) > 0:
+        qCity = Q('match', city=search['city'])
         condition.append(qCity)
 
     # professional & education background
-    if len(proBG) > 0:
-        qBG = Q('multi_match', query=proBG + ' ' + eduBG_degree + " " + eduBG_major, type='cross_fields', fields=['title', 'summary'])
+    if len(search['proBG']) > 0 or len(search['degree']) > 0 or len(search['major']) > 0:
+        qBG = Q('multi_match', query=search['proBG'] + ' ' + len(search['degree']) + " " + len(search['major']), type='cross_fields', fields=['title', 'summary'])
         condition.append(qBG)
 
     # jobtype
-    if len(jobtype) > 0:
-        qType = Q('match', jobtype=jobtype)
+    if len(len(search['jobtype'])) > 0:
+        qType = Q('match', jobtype=search['jobtype'])
         condition.append(qType)
 
     # salary
-    if salary > 0:
-        qSalary = Q('range', salary={'gte': salary})
+    if search['salary'] > 0:
+        qSalary = Q('range', salary={'gte': search['salary']})
         condition.append(qSalary)
 
     q = Q('bool', should = condition, minimum_should_match = 1)
