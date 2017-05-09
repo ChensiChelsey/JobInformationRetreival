@@ -2,7 +2,6 @@ import datetime
 import requests
 from lxml import html
 import re
-import unirest
 import string
 from dateutil import parser
 

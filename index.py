@@ -88,7 +88,6 @@ def zipOf(location):
     
 # store movie data into elastic search structure
 def prepareIndex(jobs):
-
         
     # initialize mapping
     es.indices.close(index='job_index') # For enable analyzer modify close index firstly
