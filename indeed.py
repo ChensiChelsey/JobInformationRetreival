@@ -6,11 +6,19 @@ import unirest
 import string
 from dateutil import parser
 
+'''
+this is a web crawler to download job postings from indeed
+'''
+
+
 base_url = "http://www.indeed.com"
 
+
+# based on indeeds url rule build url
 def build_url(url, *filters):
     return url + ''.join(["&" + param + "=" + val for param,val in filters])
 
+# based on indeeds url rule build valid search url
 def build_search_url(keywords, location):
     query = "/jobs?"
     keyword_filter = "q", keywords
@@ -18,7 +26,7 @@ def build_search_url(keywords, location):
     date_filter = 'fromage', 'last' # only get the latest postings
     return build_url(base_url + query, keyword_filter, location_filter, date_filter)
 
-
+# get posting's job summary field
 def build_detail(job_url):
     summary = ""
     try:
@@ -34,7 +42,7 @@ def build_detail(job_url):
     return summary
 
 
-
+# find desired part in html file
 def parse_xpath(xpath, type=unicode, unique=True):
     if len(xpath)== 0:
         #print "No elements found by xpath."
@@ -48,6 +56,7 @@ def parse_xpath(xpath, type=unicode, unique=True):
     else:
         return [type(x) for x in xpath]
 
+# get the postings date in desired form
 def parse_date(job_date):
     hours = re.match(r"(\d+) hours", job_date)
     days = re.match(r"(\d+) days", job_date)
@@ -63,8 +72,7 @@ def parse_date(job_date):
     job_date_obj = datetime.datetime.today() - datetime.timedelta(days=days, hours=hours)
     return job_date_obj
 
-
-
+# analyze job's summary, extract salary and job-type fields
 def parse_job_summary(summary, detail):
     lines = summary.split("\n")
     detail['type'] = ''
@@ -102,6 +110,7 @@ def parse_job_summary(summary, detail):
                 print Exception, ":", e
     return detail
 
+# parse the job's web site to get job's detailed information
 def parse_job(job):
     detail = {}
     detail['title'] = parse_xpath(job.xpath('.//h2[contains(@class,"jobtitle")]/a/@title'))
@@ -120,6 +129,7 @@ def parse_job(job):
     detail = parse_job_summary(summary, detail)
     return detail
 
+# based on the keyword get job postings
 def get_jobs(keywords, location, max_pages=1, id = 0, jobs = {}, starttime = 0):
     try:
         tree = html.fromstring(requests.get(build_search_url(keywords, location), timeout=10).text)

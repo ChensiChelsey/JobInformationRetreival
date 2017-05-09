@@ -10,6 +10,10 @@ from elasticsearch_dsl.analysis import tokenizer, analyzer, token_filter
 from dateutil import parser
 
 
+'''
+this file is used to build mapping relation from corpus/web crawler
+'''
+
 # connect to local host server
 connections.create_connection(hosts=['127.0.0.1'])
 

@@ -5,11 +5,23 @@ import re
 import datetime
 import pprint
 
-es = Elasticsearch(['localhost'], http_auth=('elastic', 'changeme'), port=9200)
 
+'''
+in this file are functions used to build elasticsearch queries
+'''
+
+
+es = Elasticsearch(['localhost'], http_auth=('elastic', 'changeme'), port=9200)
+global sortedresult
+sortedresult = []
+
+# do general search
 # input: jobtitle, description, state, city, jobtype, salary, date
-# index:
-def generalSearch(jobtitle, description, state, city, company, jobtype, salary, date, startpos):
+# output: list of results
+def generalSearch(jobtitle, description, state, city, company, jobtype, salary, date, startpos, latest):
+    global sortedresult
+    if latest and startpos > 0 and len(sortedresult) > 0:
+        return sortedresult[startpos: startpos + 10]
     search = Job.search()
     s = Search(using=es)
     s = s.index('job_index')
@@ -51,30 +63,50 @@ def generalSearch(jobtitle, description, state, city, company, jobtype, salary, 
     pp = pprint.PrettyPrinter(depth = 6)
     pp.pprint(s.to_dict())
 
-    s = s[startpos * 10: (startpos+1) * 10]
-    response = s.execute()
+    if latest:
+        s = s[0:100]
+        response = s.execute()
+        resultlist = []
+        print response.hits.total
+        for hit in response.hits:
+            result = {}
+            result['score'] = hit.meta.score
+            result['title'] = hit['title']
+            result['summary'] = hit['summary'][:200]
+            result['url'] = 'www.indeed.com' + hit['url']
+            result['company'] = hit['company']
+            result['location'] = hit['location']
+            result['postingdate'] = str(datetime.datetime.fromordinal(hit['date']))
+            resultlist.append(result)
+        sortedresult = sorted(resultlist, key=lambda d : d['postingdate'], reverse = 1)
+        return sortedresult[startpos: startpos+10]
+    else:
+        s = s[startpos: startpos+10]
+        response = s.execute()
 
-    resultlist = []
-    print response.hits.total
-    for hit in response.hits:
-        result = {}
-        result['score'] = hit.meta.score
-        result['title'] = hit['title']
-        result['summary'] = hit['summary'][:200]
-        result['url'] = 'www.indeed.com' + hit['url']
-        result['company'] = hit['company']
-        result['location'] = hit['location']
-        result['postingdate'] = str(datetime.datetime.fromordinal(hit['date']))
-        resultlist.append(result)
+        resultlist = []
+        print response.hits.total
+        for hit in response.hits:
+            result = {}
+            result['score'] = hit.meta.score
+            result['title'] = hit['title']
+            result['summary'] = hit['summary'][:200]
+            result['url'] = 'www.indeed.com' + hit['url']
+            result['company'] = hit['company']
+            result['location'] = hit['location']
+            result['postingdate'] = str(datetime.datetime.fromordinal(hit['date']))
+            resultlist.append(result)
 
-    return resultlist
+        return resultlist
 
+
+# search for the jobs posted by the company
 def companySearch(company, startpos):
     search = Job.search()
     s = Search(using=es)
     s = s.index('job_index')
     s = s.query('match', company=company)
-    s = s[startpos * 10: (startpos + 1) * 10]
+    s = s[startpos: startpos +10]
     response = s.execute()
 
     resultlist = []
@@ -92,6 +124,7 @@ def companySearch(company, startpos):
 
     return resultlist
 
+# recommend jobs based on user's resume
 def recommendationSearch(state, city, proBG, eduBG_degree, eduBG_major, salary, jobtype, startpos):
     search = Job.search()
     s = Search(using=es)
@@ -124,7 +157,7 @@ def recommendationSearch(state, city, proBG, eduBG_degree, eduBG_major, salary, 
     q = Q('bool', should = condition, minimum_should_match = 1)
     s = s.query(q)
 
-    s = s[startpos * 10: (startpos + 1) * 10]
+    s = s[startpos : startpos + 10]
     pp = pprint.PrettyPrinter(depth=6)
     pp.pprint(s.to_dict())
     response = s.execute()
@@ -144,4 +177,22 @@ def recommendationSearch(state, city, proBG, eduBG_degree, eduBG_major, salary, 
 
     return resultlist
 
-
+# return one job's detail information based on its id
+def jobdetail(id):
+    s = Search(using=es)
+    s = s.index('job_index')
+    s = s.filter('term', _id=id)
+    ret = s.execute()
+    hit = ret.hits[0].to_dict()
+    job = {}
+    job['title'] = hit['title']
+    job['summary'] = hit['summary']
+    job['url'] = 'www.indeed.com' + hit['url']
+    job['company'] = hit['company']
+    job['location'] = hit['location']
+    if hit['salary'] == '':
+        job['salary'] = 'Unknown'
+    else:
+        job['salary'] = hit['salary']
+    job['jobtype'] = hit['jobtype']
+    return job
