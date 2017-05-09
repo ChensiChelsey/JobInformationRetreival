@@ -2,20 +2,22 @@
 
 <div class="row">
   <div class="col-md-3" id="res">
-    <!-- left  -->
-    <!-- opertaion options -->
-    <h5 class="w3-center">
-      <span class="w3-tag w3-wide">Management</span>
-    </h5>
+    <div class="c-sidebar">
+      <!-- left  -->
+      <!-- opertaion options -->
+      <h5>
+        <span class="w3-tag w3-wide">Management</span>
+      </h5>
 
-    <button type="button" class="btn btn-default form-control" id="update_resume">
-      <%= Resume.hasResume() ? "Update" : "Create" %> 
-    </button>
-    <% if (Resume.hasResume()) {%>
-      <button type="button" class="btn btn-default form-control" id="preview_resume"> 
-        Preview
+      <button type="button" class="btn btn-default form-control" id="update_resume">
+        <%= Resume.hasResume() ? "Update" : "Create" %> 
       </button>
-    <% } %>
+      <% if (Resume.hasResume()) {%>
+        <button type="button" class="btn btn-default form-control" id="preview_resume"> 
+          Preview
+        </button>
+      <% } %>
+    </div>
   </div>
   <div class="col-md-9" id="resume_window">
     <!-- right -->

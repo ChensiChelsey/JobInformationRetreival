@@ -14,6 +14,17 @@ body {
 }
 .container-fluid {
   padding-bottom: 120px;
+  height:auto;
+  min-height: 1000px;
+}
+
+.c-sidebar {
+  position: fixed;
+  height: 200px;
+}
+
+.main-content {
+  padding-top: 80px;
 }
 
 /*highlight*/
@@ -37,7 +48,7 @@ em {
 }
 
 .form-group {
-  margin-bottom: 5px
+  margin-bottom: 2px
 }
 
 footer{

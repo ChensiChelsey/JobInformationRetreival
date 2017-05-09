@@ -1,75 +1,75 @@
 <div class="row">
   <div class="col-md-3">
-    <!-- left  -->
-    <h5 class="w3-center">
-      <span class="w3-tag w3-wide">Filter Jobs By</span>
-    </h5>
+    <div class="c-sidebar">
+      <!-- left  -->
+      <h5 class="w3-center">
+        <span class="w3-tag w3-wide">Filter Jobs By</span>
+      </h5>
 
-    <div class="form-group">
-      <label class="w3-text-grey slabel">Job Title</label>
-      <input type="text" class="form-control" id="job_title" placeholder="job title">
+      <div class="form-group">
+        <label class="w3-text-grey slabel">Job Title</label>
+        <input type="text" class="form-control" id="job_title" placeholder="job title">
+      </div>
+      <div class="form-group">
+        <label class="w3-text-grey slabel">Job Description</label>
+        <input type="text" class="form-control" id="job_description" placeholder="job description">
+      </div>
+      <div class="form-group">
+        <label class="w3-text-grey slabel">Company</label>
+        <input type="text" class="form-control" id="company" placeholder="company">
+      </div>
+      <div class="form-group">
+        <label class="w3-text-grey slabel">Job Type</label>
+        <select class="w3-select form-control" type="text" id="job_type">
+          <option value = "">-- Job Type--</option>
+          <option value = "full-time">FULL-TIME</option>
+          <option value = "internship">INTERNSHIP</option>
+          <option value = "contrast">CONTRAST</option>
+          <option value = "part-time">PART-TIME</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="w3-text-grey slabel">State</label>
+        <input type="text" class="form-control" id="state" placeholder="state">
+      </div>
+      <div class="form-group">
+        <label class="w3-text-grey slabel">City</label>
+        <input type="text" class="form-control" id="city" placeholder="city">
+      </div>
+      <div class="form-group">
+        <label class="w3-text-grey slabel">Salary</label>
+        <input type="text" class="form-control" id="salary" placeholder="salary">
+      </div>
+      
+      <div class="form-group">
+        <label class="w3-text-grey slabel">Date</label>
+        <select class="w3-select form-control" type="text" id="date">
+          <option value = "">-- Post Date--</option>
+          <option value = "Today">Today</option>
+          <option value = "Within 3 Days">Within 3 Days</option>
+          <option value = "Within 7 Days">Within 7 Days</option>
+          <option value = "1 Month">1 Month</option>
+        </select>
+      </div>
+      <button class="btn btn-default form-control search-mode" id="search" style="margin-top: 10px">
+        Search
+      </button>
     </div>
-    <div class="form-group">
-      <label class="w3-text-grey slabel">Job Description</label>
-      <input type="text" class="form-control" id="job_description" placeholder="job description">
-    </div>
-    <div class="form-group">
-      <label class="w3-text-grey slabel">Company</label>
-      <input type="text" class="form-control" id="company" placeholder="company">
-    </div>
-    <div class="form-group">
-      <label class="w3-text-grey slabel">Job Type</label>
-      <select class="w3-select form-control" type="text" id="job_type">
-        <option value = "">-- Job Type--</option>
-        <option value = "full-time">FULL-TIME</option>
-        <option value = "internship">INTERNSHIP</option>
-        <option value = "contrast">CONTRAST</option>
-        <option value = "part-time">PART-TIME</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="w3-text-grey slabel">State</label>
-      <input type="text" class="form-control" id="state" placeholder="state">
-    </div>
-    <div class="form-group">
-      <label class="w3-text-grey slabel">City</label>
-      <input type="text" class="form-control" id="city" placeholder="city">
-    </div>
-    <div class="form-group">
-      <label class="w3-text-grey slabel">Salary</label>
-      <input type="text" class="form-control" id="salary" placeholder="salary">
-    </div>
-    
-    <div class="form-group">
-      <label class="w3-text-grey slabel">Date</label>
-      <select class="w3-select form-control" type="text" id="date">
-        <option value = "">-- Post Date--</option>
-        <option value = "Today">Today</option>
-        <option value = "Within 3 Days">Within 3 Days</option>
-        <option value = "Within 7 Days">Within 7 Days</option>
-        <option value = "1 Month">1 Month</option>
-      </select>
-    </div>
-    <button class="btn btn-default form-control search-mode" id="search" style="margin-top: 10px">
-      Search
-    </button>
-
   </div>
   <div class="col-md-9">
     <!-- right -->
     <% Resume = require("Resume"); %>
-    <% if (!Resume.hasResume()) {%>
-      <p class="w3-white">Upload your resume to get your best suitable jobs!</p>
-    <% } else  {%>
-      <h5>
-        <span class="w3-tag w3-wide" id="result_title">Recommend Jobs</span>
-      </h5>
-      <div class="row" id="job_list">
-      </div>
-      <button class="btn btn-default form-control search-mode" id="load_more" style="margin-top: 10px">
-        See more
-      </button>
-    <% } %>
+    <h5>
+      <span class="w3-tag w3-wide" id="result_title">Recommend Jobs</span>
+    </h5>
+    <div class="row" id="job_list">
+      <% if (!Resume.hasResume()) {%>
+        <p class="w3-text-white">Upload your resume to get your best suitable jobs!</p>
+      <% } %>
+    </div>
+    <button class="btn btn-default form-control search-mode" id="load_more" style="margin-top: 10px; display:none" >
+      See more
+    </button>
 
   </div>
 </div>
