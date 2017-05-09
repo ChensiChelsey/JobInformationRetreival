@@ -1,0 +1,34 @@
+<% Resume = require("Resume"); %>
+
+<div class="row">
+  <div class="col-md-3" id="resume_brief">
+    <!-- left  -->
+    <!-- if no resume in cache, show "create resume" button -->
+    <!-- if resume exists, show resume brief and "modify resume" button -->
+    <h5 class="w3-center">
+      <span class="w3-tag w3-wide">Resume</span>
+    </h5>
+    <% if (Resume.hasResume()) {%>
+      <%= Resume.getBriefHTML() %>
+    <% } %>
+    <button type="button" class="btn btn-default form-control" id="manage_resume"> 
+      Manage Resume
+    </button>
+  </div>
+  <div class="col-md-9" id="recommended_jobs">
+    <!-- right -->
+    <% if (!Resume.hasResume()) {%>
+      <p class="w3-white">Upload your resume to get your best suitable jobs!</p>
+    <% } else { %>
+      <h5>
+        <span class="w3-tag w3-wide" id="result_title">Recommend Jobs For You</span>
+      </h5>
+      <div class="row" id="job_list">
+      </div>
+      <button class="btn btn-default form-control search-mode" id="load_more" style="margin-top: 10px">
+        See more
+      </button>
+    <% } %>
+
+  </div>
+</div>

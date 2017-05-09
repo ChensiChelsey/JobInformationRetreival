@@ -6,15 +6,15 @@ require.config({
     jquery: "jquery.min-2.1.4",
     TEXT: "text-2.0.14",
     Jobs: "jobs/jobs.model",
-    SearchView: "jobs/search.view",
+    HomeView: "home/home.view",
     Resume: "resume/resume"
   },
   waitSeconds: 10
 })
 
-require(["SearchView", "Resume"], function(SearchView, Resume) {
-  var search_view = new SearchView();
+require(["HomeView", "Resume"], function(HomeView, Resume) {
+  var home_view = new HomeView();
   if (Resume.hasResume())
-    search_view.display_recommends();
+    home_view.display_recommends();
 })
 

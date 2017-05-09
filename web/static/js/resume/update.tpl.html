@@ -1,0 +1,29 @@
+
+<div class="w3-content" style="max-width:700px">
+  <h5 class="w3-center w3-padding-48"><span class="w3-tag w3-wide">UPLOAD YOUR RESUME</span></h5>
+  <div>
+    <p><input class="w3-input form-control" type="text" placeholder="-- First NAME --" name="First name" id="fn" value="<%=resume.fn%>"></p>
+    <p><input class="w3-input form-control" type="text" placeholder="-- Last NAME --" name="Last name" id="ln" value="<%=resume.ln%>"></p>
+    <p class = "w3-text-grey">ADDRESS</p>
+    <p><input class="w3-input form-control" type="text" placeholder="-- State --" name="State" id="state" value="<%=resume.state%>"></p>
+    <p><input class="w3-input form-control" type="text" placeholder="-- City --" name="City" id="city" value="<%=resume.city%>"></p>
+    <p class = "w3-text-grey">PROFESSIONAL BACKGROUND</p>
+    <p><textarea class="w3-input form-control" rows="4" cols ="100" placeholder="-- Professional Background --" name="Professional Background" id="pbg"><%=resume.pbg%></textarea></p>
+    <p class = "w3-text-grey">EDUCATION BACKGROUND</p>
+    <p><input class="w3-input form-control" type="text" placeholder="-- Major --" name="Major" id="major" value="<%=resume.major%>"></p>
+    <p><input class="w3-input form-control" type="text" placeholder="-- Degree --" name="Degree" id="degree" value="<%=resume.degree%>"></p>
+    <p class = "w3-text-grey">Expected Job</p>
+    <p><select class="w3-select form-control" type="text" placeholder="Job Type" name="Job Type" id="jobtype">
+          <option value = "">-- Job Type--</option>
+          <option value = "Full-time" <%= resume.jobtype=="Full-time" ? "selected=\"selected\"" : ""%>>FULL-TIME</option>
+          <option value = "Internship" <%= resume.jobtype=="Internship" ? "selected=\"selected\"" : ""%>>INTERNSHIP</option>
+          <option value = "Contract" <%= resume.jobtype=="Contract" ? "selected=\"selected\"" : ""%>>CONTRAST</option>
+          <option value = "Part-time" <%= resume.jobtype=="Part-time" ? "selected=\"selected\"" : ""%>>PART-TIME</option>
+          <option value = "Temporary" <%= resume.jobtype=="Temporary" ? "selected=\"selected\"" : ""%>>TEMPORARY</option>
+       </select>
+    </p>
+
+    <p><input class="w3-input form-control" type="text" placeholder="-- Expected Salary --" name="Expected Salary" id="salary" value="<%=resume.salary%>"></p>
+    <button class="btn form-control center-button" id="submit"> submit </button> 
+  </div>
+</div>

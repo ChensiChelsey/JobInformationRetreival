@@ -57,13 +57,19 @@
   </div>
   <div class="col-md-9">
     <!-- right -->
+    <% Resume = require("Resume"); %>
+    <% if (!Resume.hasResume()) {%>
+      <p class="w3-white">Upload your resume to get your best suitable jobs!</p>
+    <% } else  {%>
       <h5>
         <span class="w3-tag w3-wide" id="result_title">Recommend Jobs</span>
       </h5>
-    <div class="row" id="job_list">
-    </div>
-    <button class="btn btn-default form-control search-mode" id="load_more" style="margin-top: 10px">
-      See more
-    </button>
+      <div class="row" id="job_list">
+      </div>
+      <button class="btn btn-default form-control search-mode" id="load_more" style="margin-top: 10px">
+        See more
+      </button>
+    <% } %>
+
   </div>
 </div>

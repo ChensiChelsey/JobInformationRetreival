@@ -48,3 +48,9 @@ footer{
     right:0px;
     margin-bottom:0px;
 }
+
+.center-button {
+  margin-left: auto;
+  margin-right: auto;
+  width: 30%;
+}
