@@ -7,7 +7,7 @@ define(["Backbone", "Jobs", "TEXT!home/home.tpl.html", "TEXT!jobs/job.tpl.html",
     events: {
       "click #search": "search",
       "click #load_more": "load_more",
-      "click #manager_resume": "navto_resume"
+      "click #manage_resume": "navto_resume"
     },
 
     template: _.template(HomeTpl),
