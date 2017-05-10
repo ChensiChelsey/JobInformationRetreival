@@ -19,6 +19,7 @@ sortedresult = []
 # output: list of results
 def generalSearch(search):
     global sortedresult
+    search['offset'] = int(search['offset'])
     if search['sort_by_date'] and search['offset'] > 0 and len(sortedresult) > 0:
         return sortedresult[search['offset']: search['offset'] + 10]
     s = Search(using=es)
@@ -49,6 +50,7 @@ def generalSearch(search):
 
     # salary
     if search.has_key('salary'):
+        search['salary'] = int(search['salary'])
         s = s.query('range', salary = {'gte': search['salary']})
 
     # date
@@ -99,10 +101,11 @@ def generalSearch(search):
 
 
 # search for the jobs posted by the company
-def companySearch(company, search):
+def companySearch(search):
     s = Search(using=es)
+    search['offset'] = int(search['offset'])
     s = s.index('job_index')
-    s = s.query('match', company=company)
+    s = s.query('match', company=search['company'])
     s = s[search['offset']: search['offset'] +10]
     response = s.execute()
 
@@ -125,6 +128,7 @@ def companySearch(company, search):
 def recommendationSearch(search):
     s = Search(using=es)
     s = s.index('job_index')
+    search['offset'] = int(search['offset'])
 
     condition = []
     #location
@@ -147,6 +151,7 @@ def recommendationSearch(search):
 
     # salary
     if search.has_key('salary'):
+        search['salary'] = int(search['salary'])
         qSalary = Q('range', salary={'gte': search['salary']})
         condition.append(qSalary)
 
