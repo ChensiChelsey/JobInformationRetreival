@@ -18,6 +18,11 @@ body {
   min-height: 1000px;
 }
 
+.downtoggle {
+  float: right;
+  /*background-image: url(../images/icon.png);*/
+}
+
 .c-sidebar {
   position: fixed;
   height: auto;
@@ -42,6 +47,10 @@ em {
   font-size: 20px;
 }
 
+.search_input {
+  height: 30px;
+}
+
 .slabel {
   font-size: 16px;
 }
@@ -49,6 +58,7 @@ em {
 .search-mode {
   text-align: center;
   width: 100%;
+  height: 30px;
 }
 
 .form-group {
@@ -67,4 +77,8 @@ footer{
   margin-left: auto;
   margin-right: auto;
   width: 30%;
+}
+
+.job-tag {
+  font-size: 20px;
 }

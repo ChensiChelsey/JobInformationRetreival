@@ -11,7 +11,8 @@ define(["Backbone", "underscore"], function(Backbone, _) {
     setType: function(type) {
       this.type = type;
       if (type == "recommend") this.url = "/recommend";
-      else this.url = "/search";
+      else if (type == "search") this.url = "/search";
+      else this.url = "/samecompany";
     },
 
     setData: function(data) {

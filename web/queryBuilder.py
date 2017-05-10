@@ -77,6 +77,7 @@ def generalSearch(search):
         print response.hits.total
         for hit in response.hits:
             result = {}
+            result['id'] = hit.meta.id
             result['score'] = hit.meta.score
             result['title'] = hit['title']
             result['summary'] = hit['summary'][:200]
@@ -95,6 +96,7 @@ def generalSearch(search):
         print response.hits.total
         for hit in response.hits:
             result = {}
+            result['id'] = hit.meta.id
             result['score'] = hit.meta.score
             result['title'] = hit['title']
             result['summary'] = hit['summary'][:200]
@@ -120,6 +122,7 @@ def companySearch(search):
     print response.hits.total
     for hit in response.hits:
         result = {}
+        result['id'] = hit.meta.id
         result['score'] = hit.meta.score
         result['title'] = hit['title']
         result['summary'] = hit['summary'][:200]
@@ -174,6 +177,7 @@ def recommendationSearch(search):
     print response.hits.total
     for hit in response.hits:
         result = {}
+        result['id'] = hit.meta.id
         result['score'] = hit.meta.score
         result['title'] = hit['title']
         result['summary'] = hit['summary'][:200]
@@ -193,6 +197,7 @@ def jobdetail(id):
     ret = s.execute()
     hit = ret.hits[0].to_dict()
     job = {}
+    job['id'] = id
     job['title'] = hit['title']
     job['summary'] = hit['summary']
     job['url'] = 'www.indeed.com' + hit['url']

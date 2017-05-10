@@ -33,10 +33,12 @@ def search_page():
     return render_template("search.html")
 
 
-@app.route("/job<int:job_id>")
-def job_page():
+@app.route("/jobs/<string:job_id>")
+def job_page(job_id):
     # TODO: embed job information
-    return render_template("job.html")
+    job = queryBuilder.jobdetail(job_id)
+    job["summary"] = job["summary"].replace("\n", "</br></br>")
+    return render_template("jobdetail.tpl", job=job)
 
 
 @app.route("/search")
@@ -57,6 +59,16 @@ def recommend_Search():
         if field in request.args:
             params[field] = request.args[field]
     job_list = recommend_search_ela(params)
+    return json.dumps(job_list)
+
+
+@app.route("/samecompany")
+def search_by_company():
+    params = {
+        "offset": request.args["offset"],
+        "company": request.args["company"]
+    }
+    job_list = queryBuilder.companySearch(params)
     return json.dumps(job_list)
 
 
