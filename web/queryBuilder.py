@@ -72,7 +72,7 @@ def generalSearch(search):
     pp.pprint(s.to_dict())
 
     if search['sort_by_date']:
-        s = s[0:100]
+        s = s[0:3000]
         response = s.execute()
         resultlist = []
         print response.hits.total
@@ -115,7 +115,7 @@ def companySearch(search):
     s = Search(using=es)
     search['offset'] = int(search['offset'])
     s = s.index('job_index')
-    s = s.query('match', company=search['company'])
+    s = s.query('match_phrase', company=search['company'])
     s = s[search['offset']: search['offset'] +10]
     response = s.execute()
 
