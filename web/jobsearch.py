@@ -52,7 +52,7 @@ def general_search():
 @app.route("/recommend")
 def recommend_Search():
     params = {}
-    for field in resume_fields:
+    for field in resume_fields + ["offset"]:
         if field in request.form:
             params[field] = request.form[field]
     job_list = recommend_search_ela(params)
@@ -75,7 +75,7 @@ def general_search_ela(params, mock=False):
         return job_list
 
 
-def recommend_search_ela(params, modk=False):
+def recommend_search_ela(params, mock=False):
     if mock:
         return [{
             "score": 1.0,
