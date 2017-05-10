@@ -35,7 +35,7 @@
           <div class="col-md-10">
 
             <div class="row">
-              <div class="col-md-12">
+              
                 <!-- right -->
                 <!-- Job Detail -->
                 <h3 style="margin-bottom:20px">
@@ -66,8 +66,7 @@
                 {% if job['url'] != '' %} 
                   <a href="{{'http://' + job['url']}}" target="_blank"><button class="btn btn-info">See Job On Indeed</button></a>
                 {% endif %}
-              </div>
-
+              
               
             </div>
             <div class="row" style="padding-top: 30px">
