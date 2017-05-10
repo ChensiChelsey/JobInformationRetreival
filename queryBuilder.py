@@ -1,4 +1,3 @@
-from index import Job
 from elasticsearch import Elasticsearch
 from elasticsearch_dsl import Search, Q, A
 import re
@@ -20,7 +19,10 @@ sortedresult = []
 # output: list of results
 def generalSearch(search):
     global sortedresult
+    print search
+    search['offset'] = int(search['offset'])
     if search['sort_by_date'] and search['offset'] > 0 and len(sortedresult) > 0:
+        print sortedresult
         return sortedresult[search['offset']: search['offset'] + 10]
     s = Search(using=es)
     s = s.index('job_index')
@@ -32,7 +34,14 @@ def generalSearch(search):
 
     # job description
     if search.has_key('description') or search.has_key('jobtitle'):
-        s = s.query('match', summary = search['jobtitle'] + " " + search['description'])
+        summary = ""
+        if search.has_key('jobtitle'):
+            summary += search["jobtitle"]
+            if search.has_key('description'):
+                summary += " " + search['description']
+        else:
+            summary = search['description']
+        s = s.query('match', summary = summary)
 
     # company
     if search.has_key('company'):
@@ -45,11 +54,12 @@ def generalSearch(search):
         s = s.query('match', city = search['city'])
 
     # jobtype
-    if search.has_key('jobtype'):
-        s = s.query('match', jobtype=search['jobtype'])
+    if search.has_key('type'):
+        s = s.query('match', jobtype=search['type'])
 
     # salary
     if search.has_key('salary'):
+        search['salary'] = int(search['salary'])
         s = s.query('range', salary = {'gte': search['salary']})
 
     # date
@@ -63,15 +73,17 @@ def generalSearch(search):
     pp.pprint(s.to_dict())
 
     if search['sort_by_date']:
-        s = s[0:100]
+        s = s[0: 3000]
         response = s.execute()
         resultlist = []
         print response.hits.total
+        print len(response.hits)
         for hit in response.hits:
             result = {}
+            result['id'] = hit.meta.id
             result['score'] = hit.meta.score
             result['title'] = hit['title']
-            result['summary'] = hit['summary'][:200]
+            result['summary'] = hit['summary'][:180]
             result['url'] = 'www.indeed.com' + hit['url']
             result['company'] = hit['company']
             result['location'] = hit['location']
@@ -87,9 +99,10 @@ def generalSearch(search):
         print response.hits.total
         for hit in response.hits:
             result = {}
+            result['id'] = hit.meta.id
             result['score'] = hit.meta.score
             result['title'] = hit['title']
-            result['summary'] = hit['summary'][:200]
+            result['summary'] = hit['summary'][:180]
             result['url'] = 'www.indeed.com' + hit['url']
             result['company'] = hit['company']
             result['location'] = hit['location']
@@ -100,10 +113,11 @@ def generalSearch(search):
 
 
 # search for the jobs posted by the company
-def companySearch(company, search):
+def companySearch(search):
     s = Search(using=es)
+    search['offset'] = int(search['offset'])
     s = s.index('job_index')
-    s = s.query('match', company=company)
+    s = s.query('match_phrase', company=search['company'])
     s = s[search['offset']: search['offset'] +10]
     response = s.execute()
 
@@ -111,9 +125,10 @@ def companySearch(company, search):
     print response.hits.total
     for hit in response.hits:
         result = {}
+        result['id'] = hit.meta.id
         result['score'] = hit.meta.score
         result['title'] = hit['title']
-        result['summary'] = hit['summary'][:200]
+        result['summary'] = hit['summary'][:180]
         result['url'] = 'www.indeed.com' + hit['url']
         result['company'] = hit['company']
         result['location'] = hit['location']
@@ -126,6 +141,7 @@ def companySearch(company, search):
 def recommendationSearch(search):
     s = Search(using=es)
     s = s.index('job_index')
+    search['offset'] = int(search['offset'])
 
     condition = []
     #location
@@ -138,16 +154,17 @@ def recommendationSearch(search):
 
     # professional & education background
     if search.has_key('pbg') or search.has_key('degree') or search.has_key('major'):
-        qBG = Q('multi_match', query=search['pbg'] + ' ' + len(search['degree']) + " " + len(search['major']), type='cross_fields', fields=['title', 'summary'])
+        qBG = Q('multi_match', query=search['pbg'] + ' ' + str(search['degree']) + " " + str(search['major']), type='cross_fields', fields=['title', 'summary'])
         condition.append(qBG)
 
     # jobtype
-    if search.has_key('jobtype'):
-        qType = Q('match', jobtype=search['jobtype'])
+    if search.has_key('type'):
+        qType = Q('match', jobtype=search['type'])
         condition.append(qType)
 
     # salary
     if search.has_key('salary'):
+        search['salary'] = int(search['salary'])
         qSalary = Q('range', salary={'gte': search['salary']})
         condition.append(qSalary)
 
@@ -163,9 +180,10 @@ def recommendationSearch(search):
     print response.hits.total
     for hit in response.hits:
         result = {}
+        result['id'] = hit.meta.id
         result['score'] = hit.meta.score
         result['title'] = hit['title']
-        result['summary'] = hit['summary'][:200]
+        result['summary'] = hit['summary'][:180]
         result['url'] = 'www.indeed.com' + hit['url']
         result['company'] = hit['company']
         result['location'] = hit['location']
@@ -182,6 +200,7 @@ def jobdetail(id):
     ret = s.execute()
     hit = ret.hits[0].to_dict()
     job = {}
+    job['id'] = id
     job['title'] = hit['title']
     job['summary'] = hit['summary']
     job['url'] = 'www.indeed.com' + hit['url']
