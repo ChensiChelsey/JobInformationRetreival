@@ -11,7 +11,7 @@
       </h5>
       <% if (Resume.hasResume()) {%>
         <% resume = Resume.getData() %>
-        <ol>
+        <ul>
           <% if (resume.fn != "") {%>
             <li><p class="w3-text-white"><b>First Name:</b> <%=resume.fn%></p></li>
           <% } %>
@@ -24,9 +24,9 @@
           <% if (resume.degree != "") {%>
             <li><p class="w3-text-white"><b>Degree:</b> <%=resume.degree%></p></li>
           <% } %>
-        </ol>
+        </ul>
       <% } %>
-      <button type="button" class="btn btn-default form-control" id="manage_resume"> 
+      <button type="button" class="btn btn-default form-control" id="manage_resume" style="width: 80%; margin-left:auto; margin-right: auto;"> 
         Manage Resume
       </button>
     </div>

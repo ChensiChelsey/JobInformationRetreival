@@ -1,6 +1,9 @@
 body, html {
     height: 100%;
     font-family: "Inconsolata", sans-serif;
+    width:100%;
+    min-width:1000px;
+    width:expression_r(document.body.clientWidth < 1000 ? "1000px": "auto" );
 }
 
 body {
@@ -12,6 +15,7 @@ body {
   height: auto;
   min-height: 100%;
 }
+
 .container-fluid {
   padding-bottom: 120px;
   height:auto;

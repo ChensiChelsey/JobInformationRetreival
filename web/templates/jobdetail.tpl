@@ -35,7 +35,7 @@
           <div class="col-md-10">
 
             <div class="row">
-              <div class="col-md-9">
+              <div class="col-md-12">
                 <!-- right -->
                 <!-- Job Detail -->
                 <h3 style="margin-bottom:20px">
@@ -68,11 +68,12 @@
                 {% endif %}
               </div>
 
-              <div class="col-md-3">
-                <div class="c-sidebar" id="otherjobs_view">
+              
+            </div>
+            <div class="row" style="padding-top: 30px">
+              <div class="/*c-sidebar*/" id="otherjobs_view">
 
                   
-                </div>
               </div>
             </div>
 
