@@ -4,7 +4,7 @@ import queryBuilder
 
 
 app = Flask(__name__)
-job_fields = ["job_title", "description", "company", "type", "state", "city", "salary", "date"]
+job_fields = ["jobtitle", "description", "company", "type", "state", "city", "salary", "date"]
 resume_fields = ["city", "state", "jobtype", "major", "pbg", "degree", "salary"]
 mock_job_list = [{
     "score": 1.0,
@@ -45,6 +45,7 @@ def general_search():
     for field in job_fields + ["offset", "sort_by_date"]:
         if field in request.args:
             params[field] = request.args[field]
+    params["sort_by_date"] = True if params["sort_by_date"] == "true" else False
     job_list = general_search_ela(params)
     return json.dumps(job_list)
 
@@ -52,7 +53,7 @@ def general_search():
 @app.route("/recommend")
 def recommend_Search():
     params = {}
-    for field in resume_fields + ["offset", "sort_by_date"]:
+    for field in resume_fields + ["offset"]:
         if field in request.args:
             params[field] = request.args[field]
     job_list = recommend_search_ela(params)

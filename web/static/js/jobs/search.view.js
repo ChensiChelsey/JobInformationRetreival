@@ -5,7 +5,8 @@ define(["Backbone", "Jobs", "TEXT!jobs/search.tpl.html", "TEXT!jobs/job.tpl.html
     el: "#search_view",
 
     events: {
-      "click #search": "search",
+      "click #search_relevance": "search_relevance",
+      "click #search_date": "search_date",
       "click #load_more": "load_more"
     },
 
@@ -27,10 +28,22 @@ define(["Backbone", "Jobs", "TEXT!jobs/search.tpl.html", "TEXT!jobs/job.tpl.html
       this.query(true);
     },
 
-    search: function() {
+    search_date: function() {
+      this.$("#search_relevance").removeClass("btn-success");
+      this.$("#search_date").addClass("btn-success");
+      this.search(true);
+    },
+
+    search_relevance: function() {
+      this.$("#search_date").removeClass("btn-success");
+      this.$("#search_relevance").addClass("btn-success");
+      this.search(false);
+    },
+
+    search: function(sort_by_date) {
       this.jobs.setType("search");
       this.jobs.reset();
-      this.jobs.setData(this.getQueryParams());
+      this.jobs.setData(_.extend({sort_by_date: sort_by_date}, this.getQueryParams()));
       this.query(true);
       this.$("#result_title").text("Search Results");
     },
@@ -56,16 +69,16 @@ define(["Backbone", "Jobs", "TEXT!jobs/search.tpl.html", "TEXT!jobs/job.tpl.html
     },
 
     getQueryParams: function() {
-      return {
-        job_title: this.$("#job_title").val(),
-        description: this.$("#job_description").val(),
-        company: this.$("#company").val(),
-        type: this.$("#job_type").val(),
-        state: this.$("#state").val(),
-        city: this.$("#city").val(),
-        salary: this.$("#salary").val(),
-        date: this.$("#date").val()
-      }
+      var params = {};
+      if (this.$("#jobtitle").val() != "") params["jobtitle"] = this.$("#jobtitle").val();
+      if (this.$("#job_description").val() != "") params["description"] = this.$("#job_description").val();
+      if (this.$("#company").val() != "") params["company"] = this.$("#company").val();
+      if (this.$("#job_type").val() != "") params["type"] = this.$("#job_type").val();
+      if (this.$("#state").val() != "") params["state"] = this.$("#state").val();
+      if (this.$("#city").val() != "") params["city"] = this.$("#city").val();
+      if (this.$("#salary").val() != "") params["salary"] = this.$("#salary").val();
+      if (this.$("#date").val() != "") params["date"] = this.$("#date").val();
+      return params;
     },
 
     append_jobs: function() {

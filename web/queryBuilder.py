@@ -32,7 +32,14 @@ def generalSearch(search):
 
     # job description
     if search.has_key('description') or search.has_key('jobtitle'):
-        s = s.query('match', summary = search['jobtitle'] + " " + search['description'])
+        summary = ""
+        if search.has_key('jobtitle'):
+            summary += search["jobtitle"]
+            if search.has_key('description'):
+                summary += " " + search['description']
+        else:
+            summary = search['description']
+        s = s.query('match', summary = summary)
 
     # company
     if search.has_key('company'):
