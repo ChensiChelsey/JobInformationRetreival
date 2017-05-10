@@ -19,6 +19,7 @@ sortedresult = []
 # output: list of results
 def generalSearch(search):
     global sortedresult
+    print search
     search['offset'] = int(search['offset'])
     if search['sort_by_date'] and search['offset'] > 0 and len(sortedresult) > 0:
         return sortedresult[search['offset']: search['offset'] + 10]
@@ -52,8 +53,8 @@ def generalSearch(search):
         s = s.query('match', city = search['city'])
 
     # jobtype
-    if search.has_key('jobtype'):
-        s = s.query('match', jobtype=search['jobtype'])
+    if search.has_key('type'):
+        s = s.query('match', jobtype=search['type'])
 
     # salary
     if search.has_key('salary'):
@@ -80,7 +81,7 @@ def generalSearch(search):
             result['id'] = hit.meta.id
             result['score'] = hit.meta.score
             result['title'] = hit['title']
-            result['summary'] = hit['summary'][:200]
+            result['summary'] = hit['summary'][:300]
             result['url'] = 'www.indeed.com' + hit['url']
             result['company'] = hit['company']
             result['location'] = hit['location']
@@ -155,8 +156,8 @@ def recommendationSearch(search):
         condition.append(qBG)
 
     # jobtype
-    if search.has_key('jobtype'):
-        qType = Q('match', jobtype=search['jobtype'])
+    if search.has_key('type'):
+        qType = Q('match', jobtype=search['type'])
         condition.append(qType)
 
     # salary
