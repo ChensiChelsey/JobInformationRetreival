@@ -5,9 +5,14 @@
         <%=job.title%>
       </h4>
     </a>
-    <h5 class="media-heading">
-      <%=job.score%>
-    </h5>
-    <%=job.summary%>
+    <div>
+      <div style="float:right;text-align:right">
+        <%=job.postingdate.substring(0, 10)%>
+      </div>
+      <div> 
+        <h5><%=job.company%></h5>
+      </div>
+    </div>
+    <p style="padding-top: 5px"><%=job.summary%></p>
   </div>
 </div>
