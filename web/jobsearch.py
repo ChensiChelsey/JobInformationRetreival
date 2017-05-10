@@ -42,9 +42,9 @@ def job_page():
 @app.route("/search")
 def general_search():
     params = {}
-    for field in job_fields:
-        if field in request.form:
-            params[field] = request.form[field]
+    for field in job_fields + ["offset", "sort_by_date"]:
+        if field in request.args:
+            params[field] = request.args[field]
     job_list = general_search_ela(params)
     return json.dumps(job_list)
 
@@ -52,43 +52,25 @@ def general_search():
 @app.route("/recommend")
 def recommend_Search():
     params = {}
-    for field in resume_fields + ["offset"]:
-        if field in request.form:
-            params[field] = request.form[field]
+    for field in resume_fields + ["offset", "sort_by_date"]:
+        if field in request.args:
+            params[field] = request.args[field]
     job_list = recommend_search_ela(params)
     return json.dumps(job_list)
 
 
 def general_search_ela(params, mock=False):
     if mock:
-        return [{
-            "score": 1.0,
-            "title": "title 1",
-            "summary": "job summary",
-            "url": "url",
-            "company": "indeed",
-            "location": "Waltham",
-            "postingdate": "2017-3-2"
-        }] * 10
-    else:
-        job_list = queryBuilder.generalSearch(params)
-        return job_list
+        return mock_job_list
+    job_list = queryBuilder.generalSearch(params)
+    return job_list
 
 
 def recommend_search_ela(params, mock=False):
     if mock:
-        return [{
-            "score": 1.0,
-            "title": "title 1",
-            "summary": "job summary",
-            "url": "url",
-            "company": "indeed",
-            "location": "Waltham",
-            "postingdate": "2017-3-2"
-        }] * 10
-    else:
-        job_list = queryBuilder.recommendationSearch(params)
-        return job_list
+        return mock_job_list
+    job_list = queryBuilder.recommendationSearch(params)
+    return job_list
 
 
 if __name__ == "__main__":

@@ -141,7 +141,7 @@ def recommendationSearch(search):
 
     # professional & education background
     if search.has_key('pbg') or search.has_key('degree') or search.has_key('major'):
-        qBG = Q('multi_match', query=search['pbg'] + ' ' + len(search['degree']) + " " + len(search['major']), type='cross_fields', fields=['title', 'summary'])
+        qBG = Q('multi_match', query=search['pbg'] + ' ' + str(search['degree']) + " " + str(search['major']), type='cross_fields', fields=['title', 'summary'])
         condition.append(qBG)
 
     # jobtype
