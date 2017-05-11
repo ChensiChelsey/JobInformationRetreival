@@ -32,25 +32,18 @@ def generalSearch(search):
         s = s.query('multi_match', query = search['jobtitle'], type = 'cross_fields', fields = ['title', 'summary'], operator = 'and')
 
     # job description
-    if search.has_key('description') or search.has_key('jobtitle'):
-        summary = ""
-        if search.has_key('jobtitle'):
-            summary += search["jobtitle"]
-            if search.has_key('description'):
-                summary += " " + search['description']
-        else:
-            summary = search['description']
-        s = s.query('match', summary = summary)
+    if search.has_key('description'):
+        s = s.query('match', summary = search['description'])
 
     # company
     if search.has_key('company'):
-        s = s.query('match', company=search['company'])
+        s = s.query('match_phrase', company=search['company'])
 
     # location
     if search.has_key('state'):
         s = s.query('match_phrase', state = search['state'])
     if search.has_key('city'):
-        s = s.query('match', city = search['city'])
+        s = s.query('match_phrase', city = search['city'])
 
     # jobtype
     if search.has_key('type'):
