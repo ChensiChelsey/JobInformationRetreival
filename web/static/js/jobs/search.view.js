@@ -45,7 +45,6 @@ define(["Backbone", "Jobs", "TEXT!jobs/search.tpl.html", "TEXT!jobs/job.tpl.html
       this.jobs.reset();
       this.jobs.setData(_.extend({sort_by_date: sort_by_date}, this.getQueryParams()));
       this.query(true);
-      this.$("#result_title").text("Search Results");
     },
 
     load_more: function() {
@@ -60,6 +59,8 @@ define(["Backbone", "Jobs", "TEXT!jobs/search.tpl.html", "TEXT!jobs/job.tpl.html
         success: function(collection, resp, options) {
           if (is_new) collection.trigger("refresh");
           else collection.trigger("append");
+          if (that.jobs.type == "search")
+            that.$("#result_title").text(localStorage.getItem("total") + " results");
         }
       });
     },

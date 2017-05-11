@@ -32,8 +32,11 @@ define(["Backbone", "underscore"], function(Backbone, _) {
       return resp;
     },
 
-    parse: function(jobs, options) {
-      return this.toJSON().concat(jobs);
+    parse: function(joblist_with_total, options) {
+      if (joblist_with_total instanceof Array)
+        return this.toJSON().concat(joblist_with_total);
+      localStorage.setItem("total", joblist_with_total["hitsnum"])
+      return this.toJSON().concat(joblist_with_total["joblist"])
     }
   });
 

@@ -48,8 +48,8 @@ def general_search():
         if field in request.args:
             params[field] = request.args[field]
     params["sort_by_date"] = True if params["sort_by_date"] == "true" else False
-    job_list = general_search_ela(params)
-    return json.dumps(job_list)
+    job_list_with_total = general_search_ela(params)
+    return json.dumps(job_list_with_total)
 
 
 @app.route("/recommend")
