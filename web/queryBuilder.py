@@ -88,7 +88,10 @@ def generalSearch(search):
             result['postingdate'] = str(datetime.datetime.fromordinal(hit['date']))
             resultlist.append(result)
         sortedresult = sorted(resultlist, key=lambda d : d['postingdate'], reverse = 1)
-        return sortedresult[search['offset']: search['offset']+10]
+        params = {}
+        params['joblist'] = sortedresult[search['offset']: search['offset']+10]
+        params['hitsnum'] = response.hits.total
+        return params
     else:
         s = s[search['offset']: search['offset']+10]
         response = s.execute()
@@ -107,7 +110,10 @@ def generalSearch(search):
             result['postingdate'] = str(datetime.datetime.fromordinal(hit['date']))
             resultlist.append(result)
 
-        return resultlist
+        params = {}
+        params['joblist'] = resultlist
+        params['hitsnum'] = response.hits.total
+        return params
 
 
 # search for the jobs posted by the company
