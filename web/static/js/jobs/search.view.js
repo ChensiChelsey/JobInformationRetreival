@@ -101,7 +101,9 @@ define(["Backbone", "Jobs", "TEXT!jobs/search.tpl.html", "TEXT!jobs/job.tpl.html
       for (var i = this.jobs_number; i < this.jobs.length; i ++)
         this.$("#job_list").append(this.template_job({job: this.jobs.at(i).toJSON()}));
       this.jobs_number = this.jobs.length;
-      this.$("#load_more").show();
+      if (this.jobs.type == "search" && this.jobs_number == parseInt(localStorage.getItem("total")))
+        this.$("#load_more").hide();
+      else this.$("#load_more").show();
     },
 
     refresh_jobs: function() {
