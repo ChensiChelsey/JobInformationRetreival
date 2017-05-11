@@ -43,12 +43,27 @@ define(["Backbone", "Jobs", "TEXT!jobs/search.tpl.html", "TEXT!jobs/job.tpl.html
     search: function(sort_by_date) {
       this.jobs.setType("search");
       this.jobs.reset();
+      var params = this.getQueryParams();
+      if (params["salary"] != null && !this.isNum(params["salary"])) {
+        alert(" Salary has to be number!");
+        return;
+      }
       this.jobs.setData(_.extend({sort_by_date: sort_by_date}, this.getQueryParams()));
       this.query(true);
     },
 
     load_more: function() {
       this.query(false);
+    },
+
+    isNum: function(s) {
+      if(s!=null){
+        var r,re;
+        re = /\d*/i; 
+        r = s.match(re);
+        return (r==s)?true:false;
+      }
+      return false;
     },
 
     query: function(is_new) {
